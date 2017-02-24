@@ -12,6 +12,7 @@ public class DiskUnit {
 	
 	private static final int DEFAULT_CAPACITY = 1024;  // default number of blocks     
 	private static final int DEFAULT_BLOCK_SIZE = 256; // default number of bytes per block
+	private static final int OFFSET = 8; // 8 bits offsets for size and capacity
 	private int capacity; // number of blocks of current disk instance
 	private int blockSize; // size of each block of current disk instance
 	private RandomAccessFile disk; // the file representing the simulated  disk, where all the disk blocks are stored
@@ -152,9 +153,17 @@ public class DiskUnit {
 	 */
 	
 	public void write(int blockNum, VirtualDiskBlock b) throws InvalidBlockNumberException, InvalidBlockException {		
+		if(blockNum <= 0 || blockNum > 256)
+			throw new InvalidBlockNumberException();
+		
+		if(b==null)
+			throw new InvalidBlockException();
+		
 		try { 
-			disk.seek(blockNum);
-			disk.write(b.getElement(0));;
+			disk.seek(blockNum*blockSize + OFFSET);
+			for(int i = 0; i < blockSize; i++){
+				disk.write(b.getElement(i));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		  }         
@@ -169,10 +178,17 @@ public class DiskUnit {
 	 */
 	
 	public void read(int blockNum, VirtualDiskBlock b) throws InvalidBlockNumberException, InvalidBlockException{
+		if(blockNum < 0 || blockNum >= 256)
+			throw new InvalidBlockNumberException();
+		
+		if(b==null)
+			throw new InvalidBlockException();
+		
 		try { 
-			disk.seek(blockNum);
-			byte data = disk.readByte();
-			b.setElement(blockNum, data);
+			disk.seek(blockNum*blockSize + OFFSET);
+			for(int i = 0; i < blockSize; i++){
+				b.setElement(i, disk.readByte());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		  }
