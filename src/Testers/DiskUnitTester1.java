@@ -14,7 +14,7 @@ public class DiskUnitTester1 {
 	 * @throws InvalidBlockNumberException 
 	 */
 	public static void main(String[] args) throws NonExistingDiskException, InvalidBlockNumberException, InvalidBlockException {
-		DiskUnit d = DiskUnit.mount("disk2"); // edit the name of the disk to mount
+		DiskUnit d = DiskUnit.mount("disk1"); // edit the name of the disk to mount
 	    showDiskContent(d); 
 		showFileInDiskContent(d);   
 		d.shutdown(); 

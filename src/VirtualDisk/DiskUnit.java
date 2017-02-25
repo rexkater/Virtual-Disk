@@ -12,7 +12,7 @@ public class DiskUnit {
 	
 	private static final int DEFAULT_CAPACITY = 1024;  // default number of blocks     
 	private static final int DEFAULT_BLOCK_SIZE = 256; // default number of bytes per block
-	private static final int OFFSET = 8; // 8 bits offsets for size and capacity
+	// private static final int OFFSET = 8; // 8 bits offsets for size and capacity
 	private int capacity; // number of blocks of current disk instance
 	private int blockSize; // size of each block of current disk instance
 	private RandomAccessFile disk; // the file representing the simulated  disk, where all the disk blocks are stored
@@ -153,14 +153,14 @@ public class DiskUnit {
 	 */
 	
 	public void write(int blockNum, VirtualDiskBlock b) throws InvalidBlockNumberException, InvalidBlockException {		
-		if(blockNum <= 0 || blockNum > 256)
+		if(blockNum <= 0 || blockNum > capacity)
 			throw new InvalidBlockNumberException();
 		
 		if(b==null)
 			throw new InvalidBlockException();
 		
 		try { 
-			disk.seek(blockNum*blockSize + OFFSET);
+			disk.seek(blockNum*blockSize);
 			for(int i = 0; i < blockSize; i++){
 				disk.write(b.getElement(i));
 			}
@@ -178,17 +178,21 @@ public class DiskUnit {
 	 */
 	
 	public void read(int blockNum, VirtualDiskBlock b) throws InvalidBlockNumberException, InvalidBlockException{
-		if(blockNum < 0 || blockNum >= 256)
+		if(blockNum < 0 || blockNum >= capacity)
 			throw new InvalidBlockNumberException();
 		
 		if(b==null)
 			throw new InvalidBlockException();
-		
+	
 		try { 
-			disk.seek(blockNum*blockSize + OFFSET);
+			disk.seek(blockNum*blockSize);
+			byte[] block = new byte[blockSize];
+			disk.read(block);
+			
 			for(int i = 0; i < blockSize; i++){
-				b.setElement(i, disk.readByte());
+				b.setElement(i, block[i]);
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		  }
@@ -216,10 +220,20 @@ public class DiskUnit {
 	 * Formats the disk.
 	 * This operation visits every physical block in the disk and fills 
 	 * with zeroes all those that are valid. 
+	 * @throws IOException 
 	 */
 	
-	public void lowLevelFormat(){
-		//TODO	
+	public void lowLevelFormat() throws IOException{
+		// TODO
+		disk.seek(0);
+	    for (int i=0; i< capacity; i++) {
+	    	char c = (char) disk.readByte(); 
+	    	if (!Character.isLetterOrDigit(c))
+	    		System.out.print(c); 
+	    	else
+	    		System.out.print('0'); 
+	    }
+	    System.out.println(); 
 	}
 	
 	
