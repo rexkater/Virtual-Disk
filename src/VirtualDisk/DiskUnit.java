@@ -236,21 +236,16 @@ public class DiskUnit {
 	 */
 	
 	public void lowLevelFormat() throws IOException{
-		// TODO
-		disk.seek(0);
-	    for (int i=0; i< capacity*blockSize; i++) {
-	    	char c = (char) disk.readByte(); 
-	    	if (!Character.isLetterOrDigit(c))
-	    		System.out.print(c); 
-	    	else
-	    		System.out.print('0'); 
+	    for (int i = blockSize; i < disk.length(); i++) {
+	    	disk.seek(i);
+	    	disk.writeByte(0);
 	    }
-	    System.out.println(); 
 	}
 	
 	
 	  /** 
-	   * Simulates shutting-off the disk. Just closes the corresponding RAF. 
+	   * Simulates shutting-off the disk. 
+	   * Just closes the corresponding RAF. 
 	   */
 	
 	  public void shutdown() {

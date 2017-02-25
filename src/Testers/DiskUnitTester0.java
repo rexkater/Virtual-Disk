@@ -1,4 +1,6 @@
 package Testers;
+import java.io.IOException;
+
 import Exceptions.ExistingDiskException;
 import Exceptions.InvalidBlockException;
 import Exceptions.InvalidBlockNumberException;
@@ -16,8 +18,9 @@ public class DiskUnitTester0 {
 	 * @throws NonExistingDiskException 
 	 * @throws InvalidBlockException 
 	 * @throws InvalidBlockNumberException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws ExistingDiskException, InvalidParameterException, NonExistingDiskException, InvalidBlockNumberException, InvalidBlockException {
+	public static void main(String[] args) throws ExistingDiskException, InvalidParameterException, NonExistingDiskException, InvalidBlockNumberException, InvalidBlockException, IOException {
 		DiskUnit.createDiskUnit("disk1", 256, 16);
 		DiskUnit.createDiskUnit("disk2", 256, 32);
 		DiskUnit.createDiskUnit("disk3", 256, 64);
@@ -29,7 +32,7 @@ public class DiskUnitTester0 {
 		String s = "You can modify the testers to make them more user-friendly. The " +
 				"current versions of tester 1 and of tester 2 require some minor editing in" +
 				" order to use it on a particular disk wanted. Just edit (inside the main method) " +
-				"the line that ¨mounts¨ the particular disk that you want to use. Remember that " +
+				"the line that \" mounts \" the particular disk that you want to use. Remember that " +
 				"tester 0 only creates the six disks mentioned above. Again, you can modify to " +
 				"create others or to make those testers easier to use. You should run tester 1 " +
 				"on a particular disk unit before running the tester 2 on that same unit. " +
@@ -37,7 +40,8 @@ public class DiskUnitTester0 {
 				"works. Why is the output as it is on each case? Basically, we are creating a file. "; 
 
 		for (int i=0; i<disks.length; i++) {
-			DiskUnit d = DiskUnit.mount(disks[i]);  			
+			DiskUnit d = DiskUnit.mount(disks[i]); 
+			d.lowLevelFormat();
 			splitAndWriteToDisk(s, d);  
 			d.shutdown(); 
 		}
