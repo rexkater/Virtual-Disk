@@ -226,7 +226,7 @@ public class DiskUnit {
 	public void lowLevelFormat() throws IOException{
 		// TODO
 		disk.seek(0);
-	    for (int i=0; i< capacity; i++) {
+	    for (int i=0; i< capacity*blockSize; i++) {
 	    	char c = (char) disk.readByte(); 
 	    	if (!Character.isLetterOrDigit(c))
 	    		System.out.print(c); 
