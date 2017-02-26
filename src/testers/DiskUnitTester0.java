@@ -1,13 +1,13 @@
-package Testers;
+package testers;
 import java.io.IOException;
 
-import Exceptions.ExistingDiskException;
-import Exceptions.InvalidBlockException;
-import Exceptions.InvalidBlockNumberException;
-import Exceptions.InvalidParameterException;
-import Exceptions.NonExistingDiskException;
-import VirtualDisk.DiskUnit;
-import VirtualDisk.VirtualDiskBlock;
+import diskUtilities.DiskUnit;
+import diskUtilities.VirtualDiskBlock;
+import exceptions.ExistingDiskException;
+import exceptions.InvalidBlockException;
+import exceptions.InvalidBlockNumberException;
+import exceptions.InvalidParameterException;
+import exceptions.NonExistingDiskException;
 
 public class DiskUnitTester0 {
 

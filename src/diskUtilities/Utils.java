@@ -1,4 +1,4 @@
-package VirtualDisk;
+package diskUtilities;
 
 public class Utils {
 	

@@ -1,9 +1,9 @@
-package Testers;
-import Exceptions.InvalidBlockException;
-import Exceptions.InvalidBlockNumberException;
-import Exceptions.NonExistingDiskException;
-import VirtualDisk.DiskUnit;
-import VirtualDisk.VirtualDiskBlock;
+package testers;
+import diskUtilities.DiskUnit;
+import diskUtilities.VirtualDiskBlock;
+import exceptions.InvalidBlockException;
+import exceptions.InvalidBlockNumberException;
+import exceptions.NonExistingDiskException;
 
 public class DiskUnitTester1 {
 

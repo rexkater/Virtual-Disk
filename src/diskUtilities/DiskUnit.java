@@ -1,12 +1,13 @@
-package VirtualDisk;
+package diskUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import Exceptions.ExistingDiskException;
-import Exceptions.InvalidBlockException;
-import Exceptions.InvalidBlockNumberException;
-import Exceptions.InvalidParameterException;
-import Exceptions.NonExistingDiskException;
+
+import exceptions.ExistingDiskException;
+import exceptions.InvalidBlockException;
+import exceptions.InvalidBlockNumberException;
+import exceptions.InvalidParameterException;
+import exceptions.NonExistingDiskException;
 
 public class DiskUnit {
 	

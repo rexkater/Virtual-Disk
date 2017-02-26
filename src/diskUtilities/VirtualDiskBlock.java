@@ -1,4 +1,4 @@
-package VirtualDisk;
+package diskUtilities;
 
 public class VirtualDiskBlock {
 	private static final int DEFCAP = 256; // Default number of bytes per block.
