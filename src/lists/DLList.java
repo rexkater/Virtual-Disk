@@ -1,5 +1,7 @@
 package lists;
 
+import exceptions.NodeOutOfBoundsException;
+
 public class DLList<E> implements LinkedList<E> {
 	private DNode<E> head; 
 	private int length; 

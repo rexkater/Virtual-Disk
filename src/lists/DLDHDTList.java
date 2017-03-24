@@ -1,5 +1,7 @@
 package lists;
 
+import exceptions.NodeOutOfBoundsException;
+
 public class DLDHDTList<E> implements LinkedList<E> {
 	private DNode<E> dHeader, dTrailer; 
 	private int size; 

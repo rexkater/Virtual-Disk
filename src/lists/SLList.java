@@ -3,6 +3,8 @@
  */
 package lists;
 
+import exceptions.NodeOutOfBoundsException;
+
 /**
  * @author pirvos
  *

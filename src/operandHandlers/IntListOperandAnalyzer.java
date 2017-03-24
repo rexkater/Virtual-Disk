@@ -12,8 +12,7 @@ import systemGeneralClasses.StringCharactersExtractor;
 public class IntListOperandAnalyzer 
 implements OperandAnalyzer
 {
-	private static final IntListOperandAnalyzer INT_LST_OPERAND_ANALYZER =
-		new IntListOperandAnalyzer(); 
+	private static final IntListOperandAnalyzer INT_LST_OPERAND_ANALYZER = new IntListOperandAnalyzer(); 
 	
 	private ArrayList<String> itemsList; 
 	private StringCharactersExtractor sce; 

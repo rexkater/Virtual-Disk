@@ -1,4 +1,4 @@
-package lists;
+package exceptions;
 
 public class NodeOutOfBoundsException extends RuntimeException {
 

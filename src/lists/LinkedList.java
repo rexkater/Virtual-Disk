@@ -1,5 +1,7 @@
 package lists;
 
+import exceptions.NodeOutOfBoundsException;
+
 public interface LinkedList<E> {
 	
 	int length(); 
