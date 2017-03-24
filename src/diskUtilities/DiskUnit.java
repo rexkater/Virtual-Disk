@@ -173,7 +173,7 @@ public class DiskUnit {
 	 */
 	
 	public void write(int blockNum, VirtualDiskBlock b) throws InvalidBlockNumberException, InvalidBlockException {		
-		if(blockNum <= 0 || blockNum > capacity)
+		if(blockNum <= 0 || blockNum > capacity-1)
 			throw new InvalidBlockNumberException();
 		
 		if(b==null || b.getCapacity() != blockSize)
@@ -241,14 +241,14 @@ public class DiskUnit {
 	}
 	
 	/**
-	 * Formats the disk. This operation visits every “physical block”, 
+	 * Formats the disk. This operation visits every physical block, 
 	 * except block 0, in the disk and fills with zeroes all those blocks.
 	 * @throws IOException 
 	 */
 	
 	public void lowLevelFormat() throws IOException{
+    	disk.seek(blockSize);
 	    for (int i = blockSize; i < disk.length(); i++) {
-	    	disk.seek(i);
 	    	disk.writeByte(0);
 	    }
 	}
