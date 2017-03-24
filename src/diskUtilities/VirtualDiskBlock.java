@@ -14,7 +14,7 @@ public class VirtualDiskBlock {
 	private byte[] blockUnit; // Bytes array for the virtual read and write operations.
 	
 	/**
-	 * Constructor that uses the DEFCAP on the next constructor, which has a capacity parameter.
+	 * No parameter constructor that uses the DEFCAP on the next constructor, which has a capacity parameter.
 	 */
 	public VirtualDiskBlock(){ 
 		this(DEFCAP);
@@ -25,7 +25,7 @@ public class VirtualDiskBlock {
 	 * @param blockCapacity is the number used for the initiation.
 	 */
 	public VirtualDiskBlock(int blockCapacity) {
-		if(blockCapacity < 8)
+		if(blockCapacity < 32)
 			blockUnit = new byte[DEF_BLOCKSIZE];
 		
 		else blockUnit = new byte[blockCapacity];
