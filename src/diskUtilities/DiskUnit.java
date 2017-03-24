@@ -9,11 +9,21 @@ import exceptions.InvalidBlockNumberException;
 import exceptions.InvalidParameterException;
 import exceptions.NonExistingDiskException;
 
+/**
+ * 
+ * Class to create, manipulate and manage disk units. 
+ * This is practically the essential part of the project,
+ * in which most of the important operations are executed
+ * related to the functionality of the disk units.
+ * 
+ * @author rex.reyes
+ *
+ */
+
 public class DiskUnit {
 	
 	private static final int DEFAULT_CAPACITY = 1024;  // Default number of blocks.    
 	private static final int DEFAULT_BLOCK_SIZE = 256; // Default number of bytes per block.
-	// private static final int OFFSET = 8; // 8 bits offsets for size and capacity
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
 	private RandomAccessFile disk; // File representing the simulated  disk, where all the disk blocks are stored.

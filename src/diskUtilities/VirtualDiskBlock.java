@@ -1,5 +1,13 @@
 package diskUtilities;
 
+/**
+ * Class to create, and get information from a block unit. 
+ * Block units are where a specific disk unit's information is stored.
+ * 
+ * @author rex.reyes
+ *
+ */
+
 public class VirtualDiskBlock {
 	private static final int DEFCAP = 256; // Default number of bytes per block.
 	private byte[] blockUnit; // Bytes array for the virtual read and write operations.
