@@ -24,8 +24,10 @@ public class DiskUnit {
 	
 	private static final int DEFAULT_CAPACITY = 1024;  // Default number of blocks.    
 	private static final int DEFAULT_BLOCK_SIZE = 256; // Default number of bytes per block.
+	private static final int INODE_SIZE = 9;
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
+	
 	private RandomAccessFile disk; // File representing the simulated  disk, where all the disk blocks are stored.
 
 	/** Private constructor to initiate the 
@@ -99,6 +101,7 @@ public class DiskUnit {
 	 * @throws InvalidParameterException whenever the values for capacity
 	 *  or blockSize are not valid according to the specifications.
 	 */
+	
 	public static void createDiskUnit(String name, int capacity, int blockSize) throws ExistingDiskException, InvalidParameterException{
 	    File file = new File(name);
 	    
@@ -119,6 +122,7 @@ public class DiskUnit {
 	      }
 	
 	    reserveDiskSpace(disk, capacity, blockSize);
+	    
 	       
 	    // after creation, just leave it in shutdown mode - just close the corresponding file
 	    
@@ -156,6 +160,28 @@ public class DiskUnit {
 		} catch (IOException e) {
 		   e.printStackTrace();
 		  }     
+	}
+	
+	private static void iNodesInsertion(RandomAccessFile disk, int capacity, int blockSize){
+		int iNodesDiskCap = (capacity*blockSize)/100;
+		int iNodesQuantity = iNodesDiskCap/INODE_SIZE;
+		int iNodesPerBlock = blockSize/INODE_SIZE;
+		int iNodeLastBlock;
+		
+		if(iNodesDiskCap == 0) iNodeLastBlock = 1;
+		else iNodeLastBlock = (INODE_SIZE*iNodesQuantity)/blockSize;
+		
+		for(int i = 1; i <= iNodeLastBlock; i++){
+			try {
+				disk.seek(i*blockSize);
+			} catch (IOException e) {
+				e.printStackTrace();
+			  }
+			for(int j = 0; j < iNodesPerBlock; j=j+9){
+				//disk.wri
+			}
+		}
+		
 	}
 	
 	
@@ -253,13 +279,12 @@ public class DiskUnit {
 	    }
 	}
 	
+	/** 
+	 * Simulates shutting-off the disk. 
+	 * Just closes the corresponding RAF. 
+	 */
 	
-	  /** 
-	   * Simulates shutting-off the disk. 
-	   * Just closes the corresponding RAF. 
-	   */
-	
-	  public void shutdown() {
+	public void shutdown() {
 	    try {
 	       disk.close();
 	    } catch (IOException e) {

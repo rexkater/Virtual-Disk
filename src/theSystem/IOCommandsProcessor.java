@@ -35,7 +35,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 		// the system starts in sate GENERALSTATE - upper class static field
 		currentState.push(GENERALSTATE); 
 
-		outputBlockLength = 10;    // default block lenght is 10
+		outputBlockLength = 10;    // default block length is 10
 		currentIndex = 0; 
 		hasOutputToProcess = false; 
 		this.currentIndex = 0; 
@@ -56,6 +56,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 	 * until the input has some content. 
 	 * @return The whole line of input as an object of type CommandLine. 
 	 */
+	
 	public CommandLine readCommandLine() { 
 		CommandLine cLine; 
 		do { 
@@ -71,6 +72,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 	 * OutputProcessor object. 
 	 * @param rList the list
 	 */
+	
 	public void setResultsList(ArrayList<String> rList) { 
 		resultsList = rList; 
 		currentIndex = 0; 
@@ -83,6 +85,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 	 * to the current OutputProcessor object.
 	 * @param bl the new length of the output block...
 	 */
+	
 	public void setBlockLength(int bl) { 
 		if (bl < 1)
 			bl = 10; // the default value is 10
@@ -93,6 +96,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 	 * Outputs the next block, beginning from the line at currentIndex
 	 * in the list. 
 	 */
+	
 	private void showNextBlock() { 
 		boolean moreLinesToShow = true; 
 		int lastLineToShow = 
@@ -121,6 +125,7 @@ public class IOCommandsProcessor extends CommandProcessor {
 	 * Outputs the previous block, where the last line will be the
 	 * line at currentIndex-1 in the list. 
 	 */
+	
 	private void showPrevBlock() { 
 		boolean moreLinesToShow = true; //currentIndex >= 1; 
 		int lastLineToShow = currentIndex-1; 

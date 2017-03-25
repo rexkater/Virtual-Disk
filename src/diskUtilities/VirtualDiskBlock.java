@@ -10,7 +10,7 @@ package diskUtilities;
 
 public class VirtualDiskBlock {
 	private static final int DEFCAP = 256; // Default number of bytes per block.
-	private static final int DEF_BLOCKSIZE = 32; // Minimum possible size of a block.
+	private static final int MIN_BLOCK_SIZE = 32; // Minimum possible size of a block.
 	private byte[] blockUnit; // Bytes array for the virtual read and write operations.
 	
 	/**
@@ -26,7 +26,7 @@ public class VirtualDiskBlock {
 	 */
 	public VirtualDiskBlock(int blockCapacity) {
 		if(blockCapacity < 32)
-			blockUnit = new byte[DEF_BLOCKSIZE];
+			blockUnit = new byte[MIN_BLOCK_SIZE];
 		
 		else blockUnit = new byte[blockCapacity];
 	}
