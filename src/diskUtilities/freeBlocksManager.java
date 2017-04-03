@@ -1,15 +1,17 @@
 package diskUtilities;
 
+import exceptions.FullDiskException;
+
 public class freeBlocksManager {
 
 	private int firstFLB;
 	private int flIndex;
 
-	public int getFreeBN() throws Exception { 
+	public int getFreeBN() throws FullDiskException { 
 	   int bn = 0; 
 	   
 	   if (firstFLB == 0) 
-	      throw new Exception("Full");
+	      throw new FullDiskException("The disk is full.");
 	   
 	   // disk has space 
 	   

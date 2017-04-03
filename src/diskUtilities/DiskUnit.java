@@ -27,8 +27,7 @@ public class DiskUnit {
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
 	public static byte[] bytes;
-	
-	public static File f =  new File("src" + File.separator + "DiskUnits" + File.separator);
+
 	private RandomAccessFile disk; // File representing the simulated  disk, where all the disk blocks are stored.
 
 	/** Private constructor to initiate the 
@@ -154,6 +153,7 @@ public class DiskUnit {
 	
 		// write disk parameters (number of blocks, bytes per block) in
 		// block 0 of disk space
+		
 		try {
 		   disk.seek(0);
 		   Utils.copyIntToBytesArray(bytes, 0, capacity);

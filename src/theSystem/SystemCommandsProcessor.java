@@ -1,7 +1,6 @@
 package theSystem;
 
 import java.io.File;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import diskUtilities.DiskUnit;
 import diskUtilities.Utils;
@@ -13,13 +12,12 @@ import systemGeneralClasses.CommandActionHandler;
 import systemGeneralClasses.CommandProcessor;
 import systemGeneralClasses.FixedLengthCommand;
 import systemGeneralClasses.SystemCommand;
-import systemGeneralClasses.VariableLengthCommand;
+//import systemGeneralClasses.VariableLengthCommand;
 import stack.IntStack;
 
 public class SystemCommandsProcessor extends CommandProcessor { 
 	
-	private ArrayList<String> resultsList; 
-	private ArrayList<String> disklist;
+	private ArrayList<String> diskList; 
 	SystemCommand attemptedSC; 
 	boolean stopExecution; 
 	boolean bsize = true;
@@ -47,7 +45,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 		
 	public ArrayList<String> getResultsList() { 
-		return resultsList; 
+		return diskList; 
 	}
 	
 	/**
@@ -64,10 +62,10 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	private class ShutDownProcessor implements CommandActionHandler { 
 		public ArrayList<String> execute(Command c) { 
 
-			resultsList = new ArrayList<String>(); 
-			resultsList.add("SYSTEM IS SHUTTING DOWN!!!!");
+			diskList = new ArrayList<String>(); 
+			diskList.add("SYSTEM IS SHUTTING DOWN!!!!");
 			stopExecution = true;
-			return resultsList; 
+			return diskList; 
 		}
 	}
 
@@ -77,31 +75,29 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		@Override
 		public ArrayList<String> execute(Command c) {
 
-			resultsList = new ArrayList<String>(); 
-			disklist = new ArrayList<String> ();
+			diskList = new ArrayList<String>(); 
 			
 			FixedLengthCommand fc = (FixedLengthCommand) c;
-			String name = fc.getOperand(1);
 			
-			disklist = listFilesforFolder(DiskUnit.f);
+			String name = fc.getOperand(1);
 			int cap = Integer.parseInt(fc.getOperand(2));
 			int size = Integer.parseInt(fc.getOperand(3));
-			resultsList.add(cap + "      size :"+size);
+			
+			diskList.add("The capacity of the disk should be + " + cap + " and the size "+ size + ".");
 			bsize = true;
 
 			if (size < 32 || !Utils.powerOf2(size)){
-				resultsList.add("Size must be a power of 2 and greater than 32 bytes. Selected size was: " + size);
+				diskList.add("Size must be a power of 2 and greater than 32 bytes. Selected size was: " + size);
 				bsize = false;
 			}
 			
 			if (!OperandValidatorUtils.isValidName(name))
-				resultsList.add("Invalid name formation: " + name); 
+				diskList.add("Invalid name formation: " + name); 
 			
-			else if (nameExists(name, disklist))
-				resultsList.add("This disk already exist: " + name);
+			else if (nameExists(name, diskList))
+				diskList.add("This disk already exist: " + name);
 			
 			else if(bsize){
-
 				try {
 					DiskUnit.createDiskUnit(name, cap, size);
 					listsManager.createNewList(name);
@@ -112,8 +108,8 @@ public class SystemCommandsProcessor extends CommandProcessor {
 				}
 			}
 
-			else resultsList.add("disk wasn't created");
-			return resultsList; 
+			else diskList.add("disk wasn't created");
+			return diskList; 
 		} 
 		
 	}
@@ -131,24 +127,24 @@ public class SystemCommandsProcessor extends CommandProcessor {
 
 		    // command has no operand - nothing is needed from the
 		    // command. if it comes here, it is the showall command....
-		    resultsList = new ArrayList<String>(); 
+		    diskList = new ArrayList<String>(); 
 
 		    int nLists = listsManager.getNumberOfLists();
 		    if (nLists == 0)
-		        resultsList.add("There are no lists in the system at this moment."); 
+		        diskList.add("There are no lists in the system at this moment."); 
 		    else {
-		        resultsList.add("Names of the existing lists are: "); 
+		        diskList.add("Names of the existing lists are: "); 
 		        for (int i=0; i<nLists; i++)
-		          resultsList.add("\t"+listsManager.getName(i));         
+		          diskList.add("\t"+listsManager.getName(i));         
 		        }
-		      return resultsList; 
+		      return diskList; 
 		   } 
 	}
 	
 	private class AppendProcessor implements CommandActionHandler { 
 		   public ArrayList<String> execute(Command c) {  
 
-		      resultsList = new ArrayList<String>(); 
+		      diskList = new ArrayList<String>(); 
 
 		      FixedLengthCommand fc = (FixedLengthCommand) c;
 
@@ -158,19 +154,19 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		      String name = fc.getOperand(1); 
 		      int listIndex = listsManager.getListIndex(name); 
 		      if (listIndex == -1)
-		         resultsList.add("No such list: " + name); 
+		         diskList.add("No such list: " + name); 
 		      else {
 		       int value = Integer.parseInt(fc.getOperand(2)); 
 		         listsManager.addElement(listIndex, value);
 		      }
-		      return resultsList; 
+		      return diskList; 
 		   } 
 	}
 	
 	private class AddProcessor implements CommandActionHandler { 
 		   public ArrayList<String> execute(Command c) {  
 
-		      resultsList = new ArrayList<String>(); 
+		      diskList = new ArrayList<String>(); 
 
 		      FixedLengthCommand fc = (FixedLengthCommand) c;
 
@@ -180,16 +176,16 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		      String name = fc.getOperand(1); 
 		      int listIndex = listsManager.getListIndex(name); 
 		      if (listIndex == -1)
-		         resultsList.add("No such list: " + name); 
+		         diskList.add("No such list: " + name); 
 		      else {
 		       int index = Integer.parseInt(fc.getOperand(2));
 		       if(index > listsManager.getSize(listIndex) || index < 0)
-		    	   resultsList.add("Index out of bounds.");
+		    	   diskList.add("Index out of bounds.");
 		       else{
 		       int value = Integer.parseInt(fc.getOperand(3)); 
 		       		listsManager.addElement(listIndex, index, value);}
 		      }
-		      return resultsList; 
+		      return diskList; 
 		   } 
 	}
 	
@@ -199,7 +195,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	            
 	     // command has no operand - nothing is needed from the
 	     // command. if it comes here, it is the showall command....
-	     resultsList = new ArrayList<String>(); 
+	     diskList = new ArrayList<String>(); 
 
 	     // Show each element in the list in a different line, followin
 	     // the specified format: index   --- value
@@ -210,19 +206,19 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	     String name = fc.getOperand(1); 
 	     int listIndex = listsManager.getListIndex(name); 
 	     if (listIndex == -1)
-	      resultsList.add("No such list: " + name); 
+	      diskList.add("No such list: " + name); 
 	     else {
 	      int lSize = listsManager.getSize(listIndex);
 	      if (lSize == 0)
-	          resultsList.add("List is currently empty."); 
+	          diskList.add("List is currently empty."); 
 	      else {
-	        resultsList.add("Values in the list are: "); 
+	        diskList.add("Values in the list are: "); 
 	        for (int i=0; i<lSize; i++) 
-	            resultsList.add("\tlist[" + i + "] --- " +   
+	            diskList.add("\tlist[" + i + "] --- " +   
 	                    listsManager.getElement(listIndex, i));         
 	        }
 	     }
-	     return resultsList; 
+	     return diskList; 
 	   } 
 	}
 	
@@ -231,7 +227,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		            
 		     // command has no operand - nothing is needed from the
 		     // command. if it comes here, it is the showall command....
-		     resultsList = new ArrayList<String>(); 
+		     diskList = new ArrayList<String>(); 
 
 		     // Show each element in the list in a different line, followin
 		     // the specified format: index   --- value
@@ -242,16 +238,16 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		     String name = fc.getOperand(1); 
 		     int listIndex = listsManager.getListIndex(name); 
 		     if (listIndex == -1)
-		      resultsList.add("No such list: " + name); 
+		      diskList.add("No such list: " + name); 
 		     else {
 		      int lSize = listsManager.getSize(listIndex);
 		      if (lSize == 0)
-		          resultsList.add("List is currently empty."); 
+		          diskList.add("List is currently empty."); 
 		      else {
-		        resultsList.add("The size of the list is: " + lSize);          
+		        diskList.add("The size of the list is: " + lSize);          
 		        }
 		     }
-		     return resultsList; 
+		     return diskList; 
 		   } 
 		}
 	
