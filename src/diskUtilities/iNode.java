@@ -4,6 +4,7 @@ public class iNode {
 	private byte type; // 0 if data file, 1 if directory (1 byte).
 	private int size; // The number of bytes the file has (4 bytes).
 	private int firstBlock; // Index of the disk block that corresponds to the first block of the file (4 bytes).
+	public static final int INODE_SIZE = 9;
 	
 	public iNode(byte type, int size, int firstBlock){
 		this.type = type;

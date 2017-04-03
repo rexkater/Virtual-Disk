@@ -1,6 +1,11 @@
 package theSystem;
 
+import java.io.File;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import diskUtilities.DiskUnit;
+import diskUtilities.Utils;
+import exceptions.ExistingDiskException;
 import operandHandlers.OperandValidatorUtils;
 import listsManagementClasses.ListsManager;
 import systemGeneralClasses.Command;
@@ -14,8 +19,10 @@ import stack.IntStack;
 public class SystemCommandsProcessor extends CommandProcessor { 
 	
 	private ArrayList<String> resultsList; 
+	private ArrayList<String> disklist;
 	SystemCommand attemptedSC; 
 	boolean stopExecution; 
+	boolean bsize = true;
 	private ListsManager listsManager = new ListsManager(); 
 
 	/**
@@ -27,7 +34,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		currentState.push(GENERALSTATE); 
 		createCommandList(1);    
 		
-		add(GENERALSTATE, SystemCommand.getVLSC("create-disk name", new CreateProcessor())); 
+		add(GENERALSTATE, SystemCommand.getFLSC("create-disk name int int", new CreateProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("showlists", new ShowListsProcessor())); 		
 		add(GENERALSTATE, SystemCommand.getFLSC("append name int", new AppendProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("showall name", new ShowAllProcessor())); 
@@ -71,19 +78,41 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		public ArrayList<String> execute(Command c) {
 
 			resultsList = new ArrayList<String>(); 
+			disklist = new ArrayList<String> ();
+			
+			FixedLengthCommand fc = (FixedLengthCommand) c;
+			String name = fc.getOperand(1);
+			
+			disklist = listFilesforFolder(DiskUnit.f);
+			int cap = Integer.parseInt(fc.getOperand(2));
+			int size = Integer.parseInt(fc.getOperand(3));
+			resultsList.add(cap + "      size :"+size);
+			bsize = true;
 
-			VariableLengthCommand vlc = (VariableLengthCommand) c; 
-			String name = vlc.getItemsForOperand(1).get(0);
-
-			//FixedLengthCommand fc = (FixedLengthCommand) c;
-			//String name = fc.getOperand(1); 
-
+			if (size < 32 || !Utils.powerOf2(size)){
+				resultsList.add("Size must be a power of 2 and greater than 32 bytes. Selected size was: " + size);
+				bsize = false;
+			}
+			
 			if (!OperandValidatorUtils.isValidName(name))
 				resultsList.add("Invalid name formation: " + name); 
-			else if (listsManager.nameExists(name)) 
-				resultsList.add("Name give is already in use by another list: " + name); 
-			else 
-				listsManager.createNewList(name);
+			
+			else if (nameExists(name, disklist))
+				resultsList.add("This disk already exist: " + name);
+			
+			else if(bsize){
+
+				try {
+					DiskUnit.createDiskUnit(name, cap, size);
+					listsManager.createNewList(name);
+				} catch (ExistingDiskException e) {
+					e.printStackTrace();
+				} catch (exceptions.InvalidParameterException e) {
+					e.printStackTrace();
+				}
+			}
+
+			else resultsList.add("disk wasn't created");
 			return resultsList; 
 		} 
 		
@@ -225,6 +254,43 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		     return resultsList; 
 		   } 
 		}
+	
+	/**
+	 * loads the disks to an arraylist
+	 * @param folder where there are going to be loaded from
+	 * @return
+	 */
+	
+	public ArrayList<String> listFilesforFolder (File folder){
+		ArrayList<String> resultsList2 = new ArrayList<String>();
+
+		for (File fileentry : folder.listFiles() ){
+			if (fileentry.isDirectory()){
+				listFilesforFolder(fileentry);
+			}
+			else {
+				
+				resultsList2.add(fileentry.getName());
+				
+			}
+		}
+		return resultsList2;
+	}
+	
+	/**
+	 * checks whether the disk exists
+	 * @param name name of disk
+	 * @param list list to be checked
+	 * @return
+	 */
+	
+	public boolean nameExists(String name, ArrayList<String> list){
+		for (int i = 0; i<list.size();i++){
+			if (name.equals(list.get(i)))
+				return true;
+		}
+		return false;
+	}
 
 }		
 

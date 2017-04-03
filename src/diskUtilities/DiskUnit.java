@@ -2,7 +2,7 @@ package diskUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
+import diskUtilities.Utils;
 import exceptions.ExistingDiskException;
 import exceptions.InvalidBlockException;
 import exceptions.InvalidBlockNumberException;
@@ -24,10 +24,11 @@ public class DiskUnit {
 	
 	private static final int DEFAULT_CAPACITY = 1024;  // Default number of blocks.    
 	private static final int DEFAULT_BLOCK_SIZE = 256; // Default number of bytes per block.
-	private static final int INODE_SIZE = 9;
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
+	public static byte[] bytes;
 	
+	public static File f =  new File("src" + File.separator + "DiskUnits" + File.separator);
 	private RandomAccessFile disk; // File representing the simulated  disk, where all the disk blocks are stored.
 
 	/** Private constructor to initiate the 
@@ -155,35 +156,16 @@ public class DiskUnit {
 		// block 0 of disk space
 		try {
 		   disk.seek(0);
-		   disk.writeInt(capacity);  
-		   disk.writeInt(blockSize);
+		   Utils.copyIntToBytesArray(bytes, 0, capacity);
+		   Utils.copyIntToBytesArray(bytes, 4, blockSize);
+		   Utils.copyIntToBytesArray(bytes, 8, 0); // first free block
+		   Utils.copyIntToBytesArray(bytes, 12, 0); // index free block 
+		   Utils.copyIntToBytesArray(bytes, 16, 0); // first free iNode 
+		   Utils.copyIntToBytesArray(bytes, 20, 0); // number of iNodes
 		} catch (IOException e) {
 		   e.printStackTrace();
 		  }     
 	}
-	
-	private static void iNodesInsertion(RandomAccessFile disk, int capacity, int blockSize){
-		int iNodesDiskCap = (capacity*blockSize)/100;
-		int iNodesQuantity = iNodesDiskCap/INODE_SIZE;
-		int iNodesPerBlock = blockSize/INODE_SIZE;
-		int iNodeLastBlock;
-		
-		if(iNodesDiskCap == 0) iNodeLastBlock = 1;
-		else iNodeLastBlock = (INODE_SIZE*iNodesQuantity)/blockSize;
-		
-		for(int i = 1; i <= iNodeLastBlock; i++){
-			try {
-				disk.seek(i*blockSize);
-			} catch (IOException e) {
-				e.printStackTrace();
-			  }
-			for(int j = 0; j < iNodesPerBlock; j=j+9){
-				//disk.wri
-			}
-		}
-		
-	}
-	
 	
 	/**
 	 * Writes the content of block b into the disk block corresponding to blockNum; 
