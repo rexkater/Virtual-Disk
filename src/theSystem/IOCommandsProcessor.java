@@ -11,23 +11,12 @@ import systemGeneralClasses.CommandProcessor;
 import systemGeneralClasses.FixedLengthCommand;
 import systemGeneralClasses.SystemCommand;
 
-/**
- * Class that represents the type of the object used for Input and Output
- * @author pirvos
- *
- */
 public class IOCommandsProcessor extends CommandProcessor {
 	private ArrayList<String> resultsList;
 	private int outputBlockLength; // the size of current output block settings
-	private int currentIndex; 
-	// the current index from where to resume next time the "showNextBlock"
-	// method is executed....
-	
-	private boolean hasOutputToProcess;   
-	// this field is false whenever there is no output in progress
-	
-    // all input needed shall be done through this scanner
-	private Scanner in = new Scanner(System.in); 
+	private int currentIndex; // the current index from where to resume next time the "showNextBlock"
+	private boolean hasOutputToProcess; // this field is false whenever there is no output in progress
+	private Scanner in = new Scanner(System.in); // all input needed shall be done through this scanner
 	
 	public IOCommandsProcessor() { 		
 		currentState = new IntStack(); 

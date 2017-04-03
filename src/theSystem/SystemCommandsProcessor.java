@@ -1,7 +1,6 @@
 package theSystem;
 
 import java.util.ArrayList;
-
 import operandHandlers.OperandValidatorUtils;
 import listsManagementClasses.ListsManager;
 import systemGeneralClasses.Command;
@@ -12,37 +11,11 @@ import systemGeneralClasses.SystemCommand;
 import systemGeneralClasses.VariableLengthCommand;
 import stack.IntStack;
 
-
-/**
- * 
- * @author Pedro I. Rivera-Vega
- *
- */
-
 public class SystemCommandsProcessor extends CommandProcessor { 
 	
-	
-	//NOTE: The HelpProcessor is inherited...
-
-	// To initially place all lines for the output produced after a 
-	// command is entered. The results depend on the particular command. 
 	private ArrayList<String> resultsList; 
-	
 	SystemCommand attemptedSC; 
-	// The system command that looks like the one the user is
-	// trying to execute. 
-
 	boolean stopExecution; 
-	// This field is false whenever the system is in execution
-	// Is set to true when in the "administrator" state the command
-	// "shutdown" is given to the system.
-	
-	////////////////////////////////////////////////////////////////
-	// The following are references to objects needed for management 
-	// of data as required by the particular octions of the command-set..
-	// The following represents the object that will be capable of
-	// managing the different lists that are created by the system
-	// to be implemented as a lab exercise. 
 	private ListsManager listsManager = new ListsManager(); 
 
 	/**
@@ -50,40 +23,11 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	 *  states the system can be in. 
 	 */
 	public SystemCommandsProcessor() {
-		
-		// stack of states
 		currentState = new IntStack(); 
-		
-		// The system may need to manage different states. For the moment, we
-		// just assume one state: the general state. The top of the stack
-		// "currentState" will always be the current state the system is at...
 		currentState.push(GENERALSTATE); 
-
-		// Maximum number of states for the moment is assumed to be 1
-		// this may change depending on the types of commands the system
-		// accepts in other instances...... 
-		createCommandList(1);    // only 1 state -- GENERALSTATE
-
-		// commands for the state GENERALSTATE
+		createCommandList(1);    
 		
-		// the following are just for demonstration...
-		add(GENERALSTATE, SystemCommand.getVLSC("testoutput int", 
-				new TestOutputProcessor()));        // just for demonstration
-		add(GENERALSTATE, SystemCommand.getVLSC("addnumbers int_list", 
-				new AddNumbersProcessor()));        // just for demonstration
-		
-		// the following are for the different commands that are accepted by
-		// the shell-like system that manage lists of integers
-		
-		// the command to create a new list is treated here as a command of variable length
-		// as in the case of command testoutput, it is done so just to illustrate... And
-		// again, all commands can be treated as of variable length command... 
-		// One need to make sure that the corresponding CommandActionHandler object
-		// is also working (in execute method) accordingly. See the documentation inside
-		// the CommandActionHandler class for testoutput command.
-		add(GENERALSTATE, SystemCommand.getVLSC("create name", new CreateProcessor())); 
-		
-		// the following commands are treated as fixed length commands....
+		add(GENERALSTATE, SystemCommand.getVLSC("create-disk name", new CreateProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("showlists", new ShowListsProcessor())); 		
 		add(GENERALSTATE, SystemCommand.getFLSC("append name int", new AppendProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("showall name", new ShowAllProcessor())); 
@@ -92,20 +36,13 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		add(GENERALSTATE, SystemCommand.getFLSC("exit", new ShutDownProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("help", new HelpProcessor())); 
 				
-		// need to follow this pattern to add a SystemCommand for each
-		// command that has been specified...
-		// ...
-				
-		// set to execute....
 		stopExecution = false; 
-
 	}
 		
 	public ArrayList<String> getResultsList() { 
 		return resultsList; 
 	}
 	
-	// INNER CLASSES -- ONE FOR EACH VALID COMMAND --
 	/**
 	 *  The following are inner classes. Notice that there is one such class
 	 *  for each command. The idea is that enclose the implementation of each
@@ -115,7 +52,6 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	 *  received as parameter is of the type corresponding to the particular
 	 *  inner class. For example, the command received by the "execute(...)" 
 	 *  method inside the "LoginProcessor" class must be a "login" command. 
-	 *
 	 */
 	
 	private class ShutDownProcessor implements CommandActionHandler { 
@@ -126,42 +62,6 @@ public class SystemCommandsProcessor extends CommandProcessor {
 			stopExecution = true;
 			return resultsList; 
 		}
-	}
-
-	
-	/** this is added just for testing purposes and is not part of 
-	 * what has been specified.
-	 * @author pirvos
-	 *
-	 */
-	private class TestOutputProcessor implements CommandActionHandler { 
-		public ArrayList<String> execute(Command c) {  
-			
-			// Implemented as a Variablle length command, just for testing
-			// such feature. For a fixed length alternative, just comment
-			// the following two lines, and remove comment markers from
-			// the two after. Remember to properly modify the line of
-			// code that adds the corresponding system command to 
-			// the processor --- so as to get a FLSC...
-			
-			VariableLengthCommand vlc = (VariableLengthCommand) c; 
-			String operand = vlc.getItemsForOperand(1).get(0);
-
-			//FixedLengthCommand fc = (FixedLengthCommand) c; 
-			//String operand = fc.getOperand(1); 
-
-			resultsList = new ArrayList<String>(); 
-
-			// the first operand is assumed to be an integer...
-			int operandInt = Integer.parseInt(operand); 
-			if (operandInt < 1) 
-				resultsList.add("Incorrect int value"); 
-			else 
-				for (int index=1; index <= operandInt; index++) 
-					resultsList.add("Line number "+index); 
-
-			return resultsList; 
-		} 
 	}
 
 	// classes added for the lab exercise about this project. 
@@ -187,32 +87,6 @@ public class SystemCommandsProcessor extends CommandProcessor {
 			return resultsList; 
 		} 
 		
-	}
-
-
-	// an additional command... just for demonstration....
-	private class AddNumbersProcessor implements CommandActionHandler { 
-		public ArrayList<String> execute(Command c) { 
-			
-						
-			VariableLengthCommand vlc = (VariableLengthCommand) c; 
-			ArrayList<String> operandList = vlc.getItemsForOperand(1);
-
-			resultsList = new ArrayList<String>(); 
-
-			// the first operand is assumed to be a list of integers...
-			// put all numbers in resultsList while adding them up
-			int sum = 0; 
-			resultsList.add("Numbers to add are: "); 
-			for (String operand : operandList) { 
-				resultsList.add(operand); 
-				sum += Integer.parseInt(operand); 
-			}
-			resultsList.add("===================="); 
-			resultsList.add("Total = " + sum); 
-
-			return resultsList; 
-		} 
 	}
 
 	/**
