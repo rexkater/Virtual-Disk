@@ -15,13 +15,21 @@ public class freeBlocksManager {
 	   
 	   // disk has space 
 	   
-	   if (flIndex != 0) flIndex--;
-	   else bn = firstFLB;
+	   if (flIndex != 0) {
+		   // bn = first free block[flIndex]
+		   flIndex--;
+	   }
+	   //flIndex==0 //condition
+	   else{
+		   bn = firstFLB;
+		   //FFB == FFB[0]
+		   //flIndex = n-1
+	   }
 			   
 	   return bn;
 	}
 	
-	//Whenever a block is freed, it is put in the free block structure. The idea of an algorithm for that is as follows. 
+	// Whenever a block is freed, it is put in the free block structure. The idea of an algorithm for that is as follows. 
 	
 	public void registerFB(int bn) { 
 		

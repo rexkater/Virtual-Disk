@@ -1,6 +1,6 @@
 package theSystem;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import diskUtilities.DiskUnit;
 import diskUtilities.Utils;
@@ -17,10 +17,10 @@ import stack.IntStack;
 
 public class SystemCommandsProcessor extends CommandProcessor { 
 	
-	private ArrayList<String> diskList; 
+	private ArrayList<String> disksList; 
 	SystemCommand attemptedSC; 
 	boolean stopExecution; 
-	boolean bsize = true;
+	boolean isMounted = false;
 	private ListsManager listsManager = new ListsManager(); 
 
 	/**
@@ -32,20 +32,21 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		currentState.push(GENERALSTATE); 
 		createCommandList(1);    
 		
-		add(GENERALSTATE, SystemCommand.getFLSC("create-disk name int int", new CreateProcessor())); 
-		add(GENERALSTATE, SystemCommand.getFLSC("showlists", new ShowListsProcessor())); 		
-		add(GENERALSTATE, SystemCommand.getFLSC("append name int", new AppendProcessor())); 
-		add(GENERALSTATE, SystemCommand.getFLSC("showall name", new ShowAllProcessor())); 
-		add(GENERALSTATE, SystemCommand.getFLSC("size name", new ShowSize()));
-		add(GENERALSTATE, SystemCommand.getFLSC("add name int int", new AddProcessor())); 
+		add(GENERALSTATE, SystemCommand.getFLSC("createdisk name int int", new CreateDiskProcessor())); 
+		add(GENERALSTATE, SystemCommand.getFLSC("showdisks", new ShowDisksProcessor())); 		
+//		add(GENERALSTATE, SystemCommand.getFLSC("delete name", new DeleteDiskProcessor())); 
+//		add(GENERALSTATE, SystemCommand.getFLSC("showall name", new mountDiskProcessor())); 
+//		add(GENERALSTATE, SystemCommand.getFLSC("size name", new unmountDiskProcessor()));
+//		add(GENERALSTATE, SystemCommand.getFLSC("add name int int", new loadFileProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("exit", new ShutDownProcessor())); 
 		add(GENERALSTATE, SystemCommand.getFLSC("help", new HelpProcessor())); 
+
 				
 		stopExecution = false; 
 	}
 		
 	public ArrayList<String> getResultsList() { 
-		return diskList; 
+		return disksList; 
 	}
 	
 	/**
@@ -59,225 +60,133 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	 *  method inside the "LoginProcessor" class must be a "login" command. 
 	 */
 	
+	// Classes for each command:
+	
+	/**
+	 * 
+	 * @author Rex J. Reyes
+	 *
+	 */
+	
 	private class ShutDownProcessor implements CommandActionHandler { 
 		public ArrayList<String> execute(Command c) { 
 
-			diskList = new ArrayList<String>(); 
-			diskList.add("SYSTEM IS SHUTTING DOWN!!!!");
+			disksList = new ArrayList<String>(); 
+			disksList.add("SYSTEM IS SHUTTING DOWN!");
 			stopExecution = true;
-			return diskList; 
+			return disksList; 
 		}
 	}
-
-	// classes added for the lab exercise about this project. 
 	
-	private class CreateProcessor implements CommandActionHandler {
+	/**
+	 * 
+	 * @author Rex J. Reyes
+	 *
+	 */
+	
+	private class CreateDiskProcessor implements CommandActionHandler {
 		@Override
 		public ArrayList<String> execute(Command c) {
 
-			diskList = new ArrayList<String>(); 
+			disksList = new ArrayList<String>(); 
 			
 			FixedLengthCommand fc = (FixedLengthCommand) c;
 			
 			String name = fc.getOperand(1);
 			int cap = Integer.parseInt(fc.getOperand(2));
 			int size = Integer.parseInt(fc.getOperand(3));
-			
-			diskList.add("The capacity of the disk should be + " + cap + " and the size "+ size + ".");
-			bsize = true;
 
-			if (size < 32 || !Utils.powerOf2(size)){
-				diskList.add("Size must be a power of 2 and greater than 32 bytes. Selected size was: " + size);
-				bsize = false;
-			}
+			if (size < 32 || !Utils.powerOf2(size))
+				disksList.add("Size must be a power of 2 and greater than 32 bytes. Input size was: " + size);
 			
 			if (!OperandValidatorUtils.isValidName(name))
-				diskList.add("Invalid name formation: " + name); 
+				disksList.add("Invalid name formation: " + name); 
 			
-			else if (nameExists(name, diskList))
-				diskList.add("This disk already exist: " + name);
+			else if (nameExists(name, disksList))
+				disksList.add("This disk already exists: " + name);
 			
-			else if(bsize){
+			else {
 				try {
 					DiskUnit.createDiskUnit(name, cap, size);
 					listsManager.createNewList(name);
 				} catch (ExistingDiskException e) {
 					e.printStackTrace();
-				} catch (exceptions.InvalidParameterException e) {
+				  } catch (exceptions.InvalidParameterException e) {
 					e.printStackTrace();
-				}
+				  }
 			}
-
-			else diskList.add("disk wasn't created");
-			return diskList; 
+			
+			return disksList; 
 		} 
-		
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
+	
 	public boolean inShutdownMode() {
 		return stopExecution;
 	}
 	
-	private class ShowListsProcessor implements CommandActionHandler { 
+	/**
+	 * 
+	 * @author Rex J. Reyes
+	 *
+	 */
+	
+	private class ShowDisksProcessor implements CommandActionHandler { 
 		   public ArrayList<String> execute(Command c) {  
 
 		    // command has no operand - nothing is needed from the
 		    // command. if it comes here, it is the showall command....
-		    diskList = new ArrayList<String>(); 
+		    disksList = new ArrayList<String>(); 
 
 		    int nLists = listsManager.getNumberOfLists();
 		    if (nLists == 0)
-		        diskList.add("There are no lists in the system at this moment."); 
+		        disksList.add("There are no lists in the system at this moment."); 
 		    else {
-		        diskList.add("Names of the existing lists are: "); 
+		        disksList.add("Names of the existing lists are: "); 
 		        for (int i=0; i<nLists; i++)
-		          diskList.add("\t"+listsManager.getName(i));         
+		          disksList.add("\t"+listsManager.getName(i));         
 		        }
-		      return diskList; 
+		      return disksList; 
 		   } 
 	}
 	
-	private class AppendProcessor implements CommandActionHandler { 
-		   public ArrayList<String> execute(Command c) {  
+	private class DeleteDiskProcessor implements CommandActionHandler { 
+		public ArrayList<String> execute(Command c) {
 
-		      diskList = new ArrayList<String>(); 
+			disksList = new ArrayList<String>();
+			
+			disksList = listFilesforFolder(DiskUnit.f);
 
-		      FixedLengthCommand fc = (FixedLengthCommand) c;
+			FixedLengthCommand fc = (FixedLengthCommand) c;
 
-		      // the following needs to be adapted to named lists and the 
-		      // usage of the ListsManagerObject ......
+			String name = fc.getOperand(1);
 
-		      String name = fc.getOperand(1); 
-		      int listIndex = listsManager.getListIndex(name); 
-		      if (listIndex == -1)
-		         diskList.add("No such list: " + name); 
-		      else {
-		       int value = Integer.parseInt(fc.getOperand(2)); 
-		         listsManager.addElement(listIndex, value);
-		      }
-		      return diskList; 
-		   } 
-	}
-	
-	private class AddProcessor implements CommandActionHandler { 
-		   public ArrayList<String> execute(Command c) {  
-
-		      diskList = new ArrayList<String>(); 
-
-		      FixedLengthCommand fc = (FixedLengthCommand) c;
-
-		      // the following needs to be adapted to named lists and the 
-		      // usage of the ListsManagerObject ......
-
-		      String name = fc.getOperand(1); 
-		      int listIndex = listsManager.getListIndex(name); 
-		      if (listIndex == -1)
-		         diskList.add("No such list: " + name); 
-		      else {
-		       int index = Integer.parseInt(fc.getOperand(2));
-		       if(index > listsManager.getSize(listIndex) || index < 0)
-		    	   diskList.add("Index out of bounds.");
-		       else{
-		       int value = Integer.parseInt(fc.getOperand(3)); 
-		       		listsManager.addElement(listIndex, index, value);}
-		      }
-		      return diskList; 
-		   } 
-	}
-	
-	// classes added for the lab exercise about this project. 
-	private class ShowAllProcessor implements CommandActionHandler { 
-	   public ArrayList<String> execute(Command c) {  
-	            
-	     // command has no operand - nothing is needed from the
-	     // command. if it comes here, it is the showall command....
-	     diskList = new ArrayList<String>(); 
-
-	     // Show each element in the list in a different line, followin
-	     // the specified format: index   --- value
-	     // put some heading too....
-
-	     FixedLengthCommand fc = (FixedLengthCommand) c;
-	        
-	     String name = fc.getOperand(1); 
-	     int listIndex = listsManager.getListIndex(name); 
-	     if (listIndex == -1)
-	      diskList.add("No such list: " + name); 
-	     else {
-	      int lSize = listsManager.getSize(listIndex);
-	      if (lSize == 0)
-	          diskList.add("List is currently empty."); 
-	      else {
-	        diskList.add("Values in the list are: "); 
-	        for (int i=0; i<lSize; i++) 
-	            diskList.add("\tlist[" + i + "] --- " +   
-	                    listsManager.getElement(listIndex, i));         
-	        }
-	     }
-	     return diskList; 
-	   } 
-	}
-	
-	private class ShowSize implements CommandActionHandler { 
-		   public ArrayList<String> execute(Command c) {  
-		            
-		     // command has no operand - nothing is needed from the
-		     // command. if it comes here, it is the showall command....
-		     diskList = new ArrayList<String>(); 
-
-		     // Show each element in the list in a different line, followin
-		     // the specified format: index   --- value
-		     // put some heading too....
-
-		     FixedLengthCommand fc = (FixedLengthCommand) c;
-		        
-		     String name = fc.getOperand(1); 
-		     int listIndex = listsManager.getListIndex(name); 
-		     if (listIndex == -1)
-		      diskList.add("No such list: " + name); 
-		     else {
-		      int lSize = listsManager.getSize(listIndex);
-		      if (lSize == 0)
-		          diskList.add("List is currently empty."); 
-		      else {
-		        diskList.add("The size of the list is: " + lSize);          
-		        }
-		     }
-		     return diskList; 
-		   } 
-		}
-	
-	/**
-	 * loads the disks to an arraylist
-	 * @param folder where there are going to be loaded from
-	 * @return
-	 */
-	
-	public ArrayList<String> listFilesforFolder (File folder){
-		ArrayList<String> resultsList2 = new ArrayList<String>();
-
-		for (File fileentry : folder.listFiles() ){
-			if (fileentry.isDirectory()){
-				listFilesforFolder(fileentry);
-			}
+			if (!nameExists(name, disksList))
+				disksList.add("This disk doesnt exist: " + name);
+			else if (isMounted)
+				isMounted = false;
+			
 			else {
-				
-				resultsList2.add(fileentry.getName());
-				
+				try {
+					DeleteFile(DiskUnit.f, name);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				  }
 			}
+
+			return disksList;
 		}
-		return resultsList2;
 	}
 	
 	/**
-	 * checks whether the disk exists
-	 * @param name name of disk
-	 * @param list list to be checked
-	 * @return
+	 * Checks if the name already exists in the list of disks.
+	 * @param name of disk.
+	 * @param list of disks in which the method searches.
+	 * @return true if it exists, false otherwise.
 	 */
 	
 	public boolean nameExists(String name, ArrayList<String> list){

@@ -27,7 +27,8 @@ public class DiskUnit {
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
 	public static byte[] bytes;
-
+	
+	public static File f =  new File("src" + File.separator + "DiskUnits" + File.separator);
 	private RandomAccessFile disk; // File representing the simulated  disk, where all the disk blocks are stored.
 
 	/** Private constructor to initiate the 
@@ -104,6 +105,7 @@ public class DiskUnit {
 	
 	public static void createDiskUnit(String name, int capacity, int blockSize) throws ExistingDiskException, InvalidParameterException{
 	    File file = new File(name);
+	    bytes = new byte[24];
 	    
 	    if (file.exists())
 	       throw new ExistingDiskException("Disk name is already used: " + name);
@@ -156,12 +158,18 @@ public class DiskUnit {
 		
 		try {
 		   disk.seek(0);
+//		   disk.writeInt(capacity);
+//		   disk.writeInt(blockSize);
 		   Utils.copyIntToBytesArray(bytes, 0, capacity);
 		   Utils.copyIntToBytesArray(bytes, 4, blockSize);
 		   Utils.copyIntToBytesArray(bytes, 8, 0); // first free block
 		   Utils.copyIntToBytesArray(bytes, 12, 0); // index free block 
 		   Utils.copyIntToBytesArray(bytes, 16, 0); // first free iNode 
 		   Utils.copyIntToBytesArray(bytes, 20, 0); // number of iNodes
+		   
+			for(Byte e : bytes)
+				disk.writeByte(e);
+			
 		} catch (IOException e) {
 		   e.printStackTrace();
 		  }     
