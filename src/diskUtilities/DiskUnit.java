@@ -36,13 +36,19 @@ public class DiskUnit {
      * @param name is the name of the disk.
 	 */
 	
-	private DiskUnit(String name) {
-	     try {
-	         disk = new RandomAccessFile(name, "rw");
-	     } catch (IOException e) {
-	         System.err.println ("Unable to start the disk");
-	         System.exit(1);
-	       }
+	public DiskUnit(String name) {
+		
+		if (!f.exists()){
+			f.mkdirs();
+		}
+		
+	    try {
+	    	File file = new File(f,name);
+	        disk = new RandomAccessFile(file, "rw");
+	    } catch (IOException e) {
+	        System.err.println ("Unable to start the disk");
+	        System.exit(1);
+	      }
 	}
 	
 	/**
@@ -55,7 +61,7 @@ public class DiskUnit {
 	 */
 	
 	public static DiskUnit mount(String name) throws NonExistingDiskException {
-		File file = new File(name);
+		File file = new File(f, name);
 		
 		if (!file.exists())
 			throw new NonExistingDiskException("No disk has name : " + name);
@@ -104,7 +110,7 @@ public class DiskUnit {
 	 */
 	
 	public static void createDiskUnit(String name, int capacity, int blockSize) throws ExistingDiskException, InvalidParameterException{
-	    File file = new File(name);
+	    File file = new File(f, name);
 	    bytes = new byte[24];
 	    
 	    if (file.exists())
@@ -117,7 +123,7 @@ public class DiskUnit {
 	    // disk parameters are valid... hence create the file to represent the disk unit.
 	    
 	    try {
-	        disk = new RandomAccessFile(name, "rw");
+	        disk = new RandomAccessFile(file, "rw");
 	    } catch (IOException e) {
 	        System.err.println ("Unable to start the disk");
 	        System.exit(1);
@@ -269,17 +275,43 @@ public class DiskUnit {
 	    }
 	}
 	
-	/** 
+	/**
 	 * Simulates shutting-off the disk. 
-	 * Just closes the corresponding RAF. 
+	 * Just closes the corresponding RAF.
 	 */
 	
 	public void shutdown() {
-	    try {
-	       disk.close();
-	    } catch (IOException e) {
-	       e.printStackTrace();
-	      }
+		try {
+			disk.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/** 
+`	 * Also simulates shutting-off the disk, but with a string parameter.
+	 * @param name indicates the name of the disk being shutdown.
+	 */
+	
+	public static void shutdown(String name) {
+		File file = new File(f, name);
+		
+		if (!file.exists())
+			try {
+				throw new NonExistingDiskException("No disk has name : " + name);
+			} catch (NonExistingDiskException e1) {
+				e1.printStackTrace();
+			  }
+
+		DiskUnit dUnit = new DiskUnit(name);
+
+		// Get the capacity and the block size of the disk from the file representing the disk.
+		
+			try {
+				dUnit.disk.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	  }
 
 }

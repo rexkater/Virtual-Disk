@@ -19,6 +19,7 @@ public class freeBlocksManager {
 		   // bn = first free block[flIndex]
 		   flIndex--;
 	   }
+	   
 	   //flIndex==0 //condition
 	   else{
 		   bn = firstFLB;

@@ -1,16 +1,19 @@
 package listsManagementClasses;
 
+import java.io.File;
 import java.util.ArrayList;
+import listsManagementClasses.DisksManager;
 
 /**
  * This class defines the type of object that manages the different 
  * lists being managed by the system for the lab session 
  * 
- * @author pedroirivera-vega
+ * @author Pedro I Rivera-Vega
  *
  */
+
 public class ListsManager {
-	private ArrayList<NamedList> lists; 
+	private static ArrayList<DisksManager> lists; 
 	
 	public ListsManager() { 
 		lists = new ArrayList<>(); 
@@ -23,6 +26,7 @@ public class ListsManager {
 	 * @param name
 	 * @return
 	 */
+	
 	public int getListIndex(String name) { 
 		for (int i=0; i<lists.size(); i++) 
 			if (lists.get(i).getName().equals(name)) 
@@ -33,64 +37,81 @@ public class ListsManager {
 	/**
 	 * Creates a new named list with the given name. 
 	 * @param lName the name of the new list. 
-	 *     PRE: the name given is assumed to be a valid name for 
-	 *     a list. 
 	 */
+	
 	public void createNewList(String lName) {
-		lists.add(new NamedList(lName)); 
+		lists.add(new DisksManager(lName)); 
 	}
 	
-	public void addElement(int listIndex, int value) 
-			throws IndexOutOfBoundsException 
-	{ 
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
-		lists.get(listIndex).add(value); 		
+	/**
+	 * get the block size 
+	 * @param listIndex
+	 * @return block size 
+	 */
+	
+	public int getBlockSize(int listIndex){
+		String name = lists.get(listIndex).getName();
+		return lists.get(listIndex).blockSize(name);
+	} 
+	
+	/**
+	 * returns the capacity of the disk 
+	 * @param listIndex disk
+	 * @return capacity
+	 */
+	
+	public int getCapacity(int listIndex){
+		String name = lists.get(listIndex).getName();
+		return lists.get(listIndex).Capacity(name);
 	}
 	
-	public int removeElement(int listIndex, int index) 
-			throws IndexOutOfBoundsException 
-	{
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
-		return lists.get(listIndex).remove(index); 				
-	}
-		
-	public void addElement(int listIndex, int index, int value) 
-			throws IndexOutOfBoundsException 
-	{ 
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
-		lists.get(listIndex).add(index, value); 		
-	}
-
-	public int getElement(int listIndex, int index) 
-			throws IndexOutOfBoundsException 
-	{
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
-		return lists.get(listIndex).get(index); 				
-	}
-	
-	public int getSize(int listIndex) 
-	{
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
-		return lists.get(listIndex).size(); 				
-	}
+	/**
+	 * Method to get the name of a disk.
+	 * @param listIndex is the index of an specific disk.
+	 * @returns a specific disk name.
+	 */
 	
 	public String getName(int listIndex) {
-		// PRE: the listIndex is assumed to be a valid index for the
-		// list of lists....
 		return lists.get(listIndex).getName(); 
 	}
 	
-	public int getNumberOfLists() { 
+	/**
+	 * Gets the number of current existent disks.
+	 * @returns number of existent disks.
+	 */
+	
+	public int getNumberOfDisks() { 
 		return lists.size(); 
 	}
+	
+	/**
+	 * Checks if the specified name exists.
+	 * @param name to be compared within the list of disks.
+	 * @returns true if existent, false otherwise.
+	 */
 	
 	public boolean nameExists(String name) { 
 		int index = getListIndex(name); 
 		return index != -1; 
 	}
+	
+	/**
+	 * Loads the file of the disks.
+	 * @param folder to be read.
+	 */
+	
+	public static void listFilesforFolder (File folder){
+
+		for (File fileentry : folder.listFiles() ){
+			if (fileentry.isDirectory()){
+				listFilesforFolder(fileentry);
+			}
+			else {
+				
+				lists.add(new DisksManager(fileentry.getName()));
+				
+			}
+		}
+	}
+	
 }

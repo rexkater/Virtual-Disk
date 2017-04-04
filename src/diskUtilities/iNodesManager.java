@@ -3,6 +3,12 @@ package diskUtilities;
 import exceptions.InvalidBlockException;
 import exceptions.InvalidBlockNumberException;
 
+/**
+ * 
+ * @author Rex J. Reyes
+ *
+ */
+
 public class iNodesManager {
 
 	public static byte [] inodebytes;
@@ -27,8 +33,14 @@ public class iNodesManager {
 		return 0;
 	}
 	
+	/**
+	 * 
+	 * @param du
+	 * @param inodesBytes
+	 */
+	
 	public static void writeToDisk(DiskUnit du, byte[] inodesBytes){
-		int blockSize =du.getBlockSize();
+		int blockSize = du.getBlockSize();
 		int numberofInodeBlocks = inodesBytes.length / blockSize;
 		if(inodesBytes.length % blockSize != 0)
 			numberofInodeBlocks++;
@@ -47,9 +59,22 @@ public class iNodesManager {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param nBlocks
+	 * @return
+	 */
+	
 	public static int numberofBlockForInodes(int nBlocks){
-		return Math.max(1, (int) (.010)*nBlocks);
+		return Math.max(1, (int) (.010) * nBlocks);
 	}
+	
+	/**
+	 * 
+	 * @param nBlocks
+	 * @param bSize
+	 * @return
+	 */
 	
 	public static int numberofInodes(int nBlocks, int bSize){
 		return (numberofBlockForInodes(nBlocks) * bSize)/9;
