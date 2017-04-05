@@ -36,4 +36,12 @@ public class iNode {
 		return temp;
 	}
 	
+	public String toString(){
+		return "INode: FirstBlock: " + firstBlock + " | Size: " + size + " | Type: " + type;
+	}
+
+	public void setSize(int nSize) {
+		size = nSize;
+	}
+	
 }

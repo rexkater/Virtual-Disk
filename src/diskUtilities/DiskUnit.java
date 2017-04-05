@@ -26,6 +26,8 @@ public class DiskUnit {
 	private static final int DEFAULT_BLOCK_SIZE = 256; // Default number of bytes per block.
 	private int capacity; // Number of blocks of current disk instance.
 	private int blockSize; // Size of each block of current disk instance.
+	private iNodeManager iNodeManager;	
+	private freeBlocksManager fbManager;
 	public static byte[] bytes;
 	
 	public static File f =  new File("src" + File.separator + "DiskUnits" + File.separator);
@@ -313,5 +315,85 @@ public class DiskUnit {
 				e.printStackTrace();
 			}
 	  }
+	
+	/**
+	 * Deletes this DiskUnit.
+	 * @param name the name of this DiskUnit
+	 * @throws NonExistingDiskException if the disk does not exist
+	 */
+	
+	public void delete(String name) throws NonExistingDiskException{
+		File file = new File(f, name);
+		File file2 = new File(f, name + "BlocksDamaged.txt");
+		if(file.exists()){
+			file.delete();
+			if(file2.exists())
+				file2.delete();
+		}
+		else
+			throw new NonExistingDiskException("DiskUnit " + name + " does not exist!");
+
+
+	}
+
+	/**
+	 * Formats this disk with the given capacity and block size.
+	 * @param name the name of this DiskUnit
+	 * @param capacity the number of blocks
+	 * @param blockSize the size of the blocks
+	 * @throws NonExistingDiskException if the disk does not exist
+	 * @throws InvalidParameterException if capacity and/or block size are not powers of 2
+	 * @throws ExistingDiskException 
+	 */
+	
+	public void format(String name, int capacity, int blockSize) throws NonExistingDiskException, InvalidParameterException, ExistingDiskException {
+		if(!Utils.powerOf2(capacity) || !Utils.powerOf2(blockSize))
+			throw new InvalidParameterException(name);
+
+		delete(name);
+		DiskUnit.createDiskUnit(name, capacity, blockSize);
+	}
+	
+	/**
+	 * Reserves the space of the INodes and updates the INodeManager.
+	 */
+	
+	private void reserveINodeSpace(){
+		iNodeManager.clearINodes();
+
+		try {
+			disk.seek(blockSize);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		int numberOfINodeBlocks = Utils.getNumberOfINodeBlocks(this);
+		int numberOfINodes = Utils.getNumberOfINodes(this);
+		iNode node = new iNode((byte)1, numberOfINodeBlocks+1, blockSize-4); //Root directory
+		
+		if(numberOfINodes == 1)
+			node.setFirstBlock(0);
+		iNodeManager.addiNode(node);
+
+		for(int i = 2 ; i <= numberOfINodes ; i++){
+			iNode n = new iNode( (byte) 0, i % numberOfINodes, 0);
+			iNodeManager.addiNode(n);
+		}
+	}
+	
+	/**
+	 * Returns the free block structure.
+	 */
+	//public String showFreeBlocks(){
+		//return fbManager.showFreeBlocks();
+	//}
+	
+	/**
+	 * Returns the FreeBlockManager for this DiskUnit.
+	 * @return the FreeBlockManager for this DiskUnit
+	 */
+	public freeBlocksManager getFBManager(){
+		return fbManager;
+	}
 
 }

@@ -1,5 +1,7 @@
 package diskUtilities;
 
+import java.nio.ByteBuffer;
+
 /**
  * Class to create, and get information from a block unit. 
  * Block units are where a specific disk unit's information is stored.
@@ -30,6 +32,16 @@ public class VirtualDiskBlock {
 		
 		else blockUnit = new byte[blockCapacity];
 	}
+	
+	/**
+	 * Creates a new VirtualDiskBlock with the capacity given, and the next block given.
+	 * @param blockCapacity the capacity of the block
+	 * @param nextBlock the number of the next block
+	 */
+	public VirtualDiskBlock(int blockCapacity , int nextBlock){
+		blockUnit = new byte[blockCapacity];
+		Utils.copyNextBNToBlock(this, nextBlock);
+	}
 
 	/**
 	 * Method to get the the blockUnit's capacity value.
@@ -55,6 +67,23 @@ public class VirtualDiskBlock {
 	 */
 	public void setElement(int i, byte b) {
 		blockUnit[i] = b;
+	}
+	
+	/**
+	 * Returns the contents of this VirtualDiskBlock as an array of bytes.
+	 * @return the contents of the disk block
+	 */
+	public byte[] getAll(){
+		return blockUnit;
+	}
+	
+	/**
+	 * Returns the block number of the next block.
+	 * @return the block number of the next block
+	 */
+	public int getNextBlockNumber(){
+		byte[] nbn = {blockUnit[blockUnit.length-4], blockUnit[blockUnit.length-3], blockUnit[blockUnit.length-2], blockUnit[blockUnit.length-1]};
+		return ByteBuffer.wrap(nbn).getInt();
 	}
 
 }

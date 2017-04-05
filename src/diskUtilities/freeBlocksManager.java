@@ -6,6 +6,8 @@ public class freeBlocksManager {
 
 	private int firstFLB;
 	private int flIndex;
+	public final static int FBROOT_OFFSET = 8;
+	public final static int FBINDEX_OFFSET = 12;
 
 	public int getFreeBN() throws FullDiskException { 
 	   int bn = 0; 
