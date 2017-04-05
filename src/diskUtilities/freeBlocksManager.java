@@ -2,12 +2,27 @@ package diskUtilities;
 
 import exceptions.FullDiskException;
 
+/**
+ * Class to administrate free blocks.
+ * @author owner
+ */
+
 public class freeBlocksManager {
 
 	private int firstFLB;
 	private int flIndex;
 	public final static int FBROOT_OFFSET = 8;
 	public final static int FBINDEX_OFFSET = 12;
+
+	/**
+	 * Method to manage free blocks.
+	 * CURRENTLY NOT WORKING.
+	 * @param dUnit
+	 */
+	
+	public freeBlocksManager(DiskUnit dUnit) {
+		// TODO Auto-generated constructor stub
+	}
 
 	public int getFreeBN() throws FullDiskException { 
 	   int bn = 0; 
@@ -33,6 +48,11 @@ public class freeBlocksManager {
 	}
 	
 	// Whenever a block is freed, it is put in the free block structure. The idea of an algorithm for that is as follows. 
+	
+	/**
+	 * Method to register free blocks. 
+	 * @param bn
+	 */
 	
 	public void registerFB(int bn) { 
 		

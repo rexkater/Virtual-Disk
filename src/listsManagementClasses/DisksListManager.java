@@ -2,6 +2,7 @@ package listsManagementClasses;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,6 +10,7 @@ import java.util.Scanner;
 import exceptions.ExistingDiskException;
 import exceptions.InvalidParameterException;
 import exceptions.NonExistingDiskException;
+import exceptions.iNodeIndexOutOfBoundsException;
 import listsManagementClasses.DiskManager;
 
 /**
@@ -31,8 +33,8 @@ public class DisksListManager {
 	 * Find the index of the position where a list with a given name is. 
 	 * If no such list it returns -1; otherwise, it returns the index of
 	 * the position where it is located in the list of lists....
-	 * @param name
-	 * @return
+	 * @param name of the disk to get. 
+	 * @return -1 or index, depending if it exists or not.
 	 */
 	
 	public int getDiskListIndex(String name) { 
@@ -47,8 +49,11 @@ public class DisksListManager {
 	 * @param dName the name of the disk
 	 * @throws NonExistingDiskException 
 	 * @throws InvalidParameterException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
-	public void createNewDisk(String dName) throws InvalidParameterException, NonExistingDiskException {
+	
+	public void createNewDisk(String dName) throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException {
 		disks.add(new DiskManager(dName)); 
 		saveInfoToFile();
 	}
@@ -58,9 +63,11 @@ public class DisksListManager {
 	 * @param lName the name of the new list. 
 	 * @throws NonExistingDiskException 
 	 * @throws InvalidParameterException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
 	
-	public void createNewDisk(String dName, int blockSize, int capacity) throws InvalidParameterException, NonExistingDiskException {
+	public void createNewDisk(String dName, int blockSize, int capacity) throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException {
 		disks.add(new DiskManager(dName, blockSize, capacity)); 
 		saveInfoToFile(); 
 	}
@@ -71,6 +78,7 @@ public class DisksListManager {
 	 * @return the NamedDiskUnit that was removed
 	 * @throws IndexOutOfBoundsException if the index is not valid
 	 */
+	
 	public DiskManager removeDisk(int index) 
 			throws IndexOutOfBoundsException 
 	{
@@ -83,7 +91,6 @@ public class DisksListManager {
 		try {
 			dtr.delete();
 		} catch (NonExistingDiskException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -98,8 +105,11 @@ public class DisksListManager {
 	 * @param blockSize he size of each block that the disk will have
 	 * @throws NonExistingDiskException if the disk does not exist
 	 * @throws InvalidParameterException if the parameters are not powers of 2
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
-	public void formatDisk(int index, int numberOfBlocks, int blockSize) throws NonExistingDiskException, InvalidParameterException{
+	
+	public void formatDisk(int index, int numberOfBlocks, int blockSize) throws NonExistingDiskException, InvalidParameterException, IOException, iNodeIndexOutOfBoundsException{
 				String name = disks.get(index).getName();
 				disks.get(index).getDisk().shutdown();
 				
@@ -119,6 +129,7 @@ public class DisksListManager {
 	 * @return the block size of the disk
 	 * @throws IndexOutOfBoundsException if the index is not valid
 	 */
+	
 	public int getBlockSize(int index) throws IndexOutOfBoundsException
 	{
 		if(index < 0 || index >= disks.size())
@@ -133,6 +144,7 @@ public class DisksListManager {
 	 * @return the number of blocks the disk has
 	 * @throws IndexOutOfBoundsException if the index is not valid
 	 */
+	
 	public int getCapacity(int index) throws IndexOutOfBoundsException{
 		if(index < 0 || index >= disks.size())
 			throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -146,6 +158,7 @@ public class DisksListManager {
 	 * @return the name of said disk
 	 * @throws IndexOutOfBoundsException if the index is not valid
 	 */
+	
 	public String getName(int index) throws IndexOutOfBoundsException{
 		if(index < 0 || index >= disks.size())
 			throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -158,6 +171,7 @@ public class DisksListManager {
 	 * @return the NamedDiskUnit representing said disk
 	 * @throws IndexOutOfBoundsException if the index is not valid
 	 */
+	
 	public DiskManager getNamedDiskUnit(int index) throws IndexOutOfBoundsException{
 		if(index < 0 || index >= disks.size())
 			throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -168,6 +182,7 @@ public class DisksListManager {
 	 * Returns the number of disks in the list.
 	 * @return the number of disks
 	 */
+	
 	public int getNumberOfDisks() { 
 		return disks.size(); 
 	}
@@ -188,9 +203,11 @@ public class DisksListManager {
 	 * @param folder to be read.
 	 * @throws NonExistingDiskException 
 	 * @throws InvalidParameterException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
 	
-	public static void listFilesforFolder (File folder) throws InvalidParameterException, NonExistingDiskException{
+	public static void listFilesforFolder (File folder) throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException{
 
 		for (File fileentry : folder.listFiles() ){
 			if (fileentry.isDirectory()){
@@ -207,6 +224,7 @@ public class DisksListManager {
 	/**
 	 * Saves the disk names to a file.
 	 */
+	
 	public void saveInfoToFile(){
 
 		try {
@@ -227,8 +245,11 @@ public class DisksListManager {
 	 * Loads the disk names from a file.
 	 * @throws NonExistingDiskException 
 	 * @throws InvalidParameterException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
-	public void loadInfoFromFile() throws InvalidParameterException, NonExistingDiskException{
+	
+	public void loadInfoFromFile() throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException{
 		if(nameOfDiskUnits.exists()){
 			Scanner sc;
 			try {
@@ -239,7 +260,6 @@ public class DisksListManager {
 					createNewDisk(sc.nextLine());
 
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -251,6 +271,7 @@ public class DisksListManager {
 	 * @return true if the disk is mounted, false otherwise
 	 * @throws IndexOutOfBoundsException if the indx is not valid
 	 */
+	
 	public boolean isMounted(int index) throws IndexOutOfBoundsException{
 		if(index < 0 || index >= disks.size())
 			throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -261,6 +282,7 @@ public class DisksListManager {
 	/**
 	 * Shuts down every DiskUnit.
 	 */
+	
 	public void shutdown(){
 		for(DiskManager e : disks){
 			e.shutdown();

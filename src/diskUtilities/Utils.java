@@ -110,6 +110,7 @@ public class Utils {
 	 * @param index the index to insert the Character at
 	 * @param c the Character to insert
 	 */
+    
 	public static void copyCharToBlock(VirtualDiskBlock vdb, int index, char c) { 
 		vdb.setElement(index, (byte) c); 
 	}	
@@ -120,17 +121,18 @@ public class Utils {
 	 * @param index the index at which the Character is located
 	 * @return the Character in the given index of the block
 	 */
+	
 	public static char getCharFromBlock(VirtualDiskBlock vdb, int index) { 
 		return (char) vdb.getElement(index); 
 	}
 	
-	// working with characters to and from an array of bytes
 	/**
 	 * Copies a Character to a Byte array.
 	 * @param b the byte array to copy it to
 	 * @param index the index of the array
 	 * @param c the Character to insert
 	 */
+	
 	public static void copyCharToBytesArray(byte[] b, int index, char c) { 
 		b[index] = (byte) c; 
 	}
@@ -141,6 +143,7 @@ public class Utils {
 	 * @param index the index of the array
 	 * @return the Character in the given index of the given array
 	 */
+	
 	public static char getCharFromBytesArray(byte[] b, int index) { 
 		return (char) b[index]; 
 	}	
@@ -151,6 +154,7 @@ public class Utils {
 	 * @throws InvalidBlockException 
 	 * @throws InvalidBlockNumberException 
 	 */
+	
 	public static void showFileInDiskContent(DiskUnit d) throws InvalidBlockNumberException, InvalidBlockException { 
 		VirtualDiskBlock vdb = new VirtualDiskBlock(d.getBlockSize()); 
 		
@@ -171,6 +175,7 @@ public class Utils {
 	 * @throws InvalidBlockException 
 	 * @throws InvalidBlockNumberException 
 	 */
+	
 	public static void showDiskContent(DiskUnit d) throws InvalidBlockNumberException, InvalidBlockException { 
 		
 		System.out.println("Capacity of disk is: " + d.getCapacity()); 
@@ -189,6 +194,7 @@ public class Utils {
 	 * @param b the number of the block
 	 * @param block the VirtualDiskBlock
 	 */
+	
 	public static void showVirtualDiskBlock(int b, VirtualDiskBlock block) {
 	    System.out.print(" Block "+ b + "\t"); 
 	    for (int i=0; i<block.getCapacity(); i++) {
@@ -207,6 +213,7 @@ public class Utils {
 	 * @param vdb the VirtualDiskBlock
 	 * @param value the integer to copy
 	 */
+	
 	public static void copyNextBNToBlock(VirtualDiskBlock vdb, int value) { 
 		int lastPos = vdb.getCapacity()-1;
 
@@ -222,6 +229,7 @@ public class Utils {
 	 * @param vdb the VirtualDiskBlock to read from
 	 * @return the next block number
 	 */
+	
 	public static int getNextBNFromBlock(VirtualDiskBlock vdb) { 
 		int bsize = vdb.getCapacity(); 
 		int value = 0; 
@@ -240,6 +248,7 @@ public class Utils {
 	 * @param dUnit the DiskUnit to check
 	 * @return the number of INode blocks from the given DiskUnit
 	 */
+	
 	public static int getNumberOfINodeBlocks(DiskUnit dUnit){
 		return (int)(Math.max(1, Math.ceil(((PERCENTAGE_OF_INODE_BLOCKS * dUnit.getCapacity()) * iNodeManager.INODESIZE) / dUnit.getBlockSize())));
 	}
@@ -249,6 +258,7 @@ public class Utils {
 	 * @param dUnit the DiskUnit to check
 	 * @return the number of INodes in the given DiskUnit
 	 */
+	
 	public static int getNumberOfINodes(DiskUnit dUnit){
 		return (int)(Math.max(1, (PERCENTAGE_OF_INODE_BLOCKS * dUnit.getCapacity())));
 	}
@@ -258,6 +268,7 @@ public class Utils {
 	 * @param dUnit the DiskUnit to read from
 	 * @return the number of blocks for the free blocks array
 	 */
+	
 	public static int getNumberOfBlocksForFBArray(DiskUnit dUnit){
 		double numberOfBytesForFBArray = (dUnit.getCapacity()-1-getNumberOfINodeBlocks(dUnit))*4;
 		return (int)(Math.max(1, Math.ceil((numberOfBytesForFBArray/(dUnit.getBlockSize())))));

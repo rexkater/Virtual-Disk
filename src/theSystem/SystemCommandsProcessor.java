@@ -10,6 +10,7 @@ import diskUtilities.Utils;
 import exceptions.ExistingDiskException;
 import exceptions.InvalidParameterException;
 import exceptions.NonExistingDiskException;
+import exceptions.iNodeIndexOutOfBoundsException;
 import operandHandlers.OperandValidatorUtils;
 import listsManagementClasses.DiskManager;
 import listsManagementClasses.DisksListManager;
@@ -33,8 +34,10 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	/**
 	 *  Initializes the list of possible commands for each of the
 	 *  states the system can be in. 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
-	public SystemCommandsProcessor() {
+	public SystemCommandsProcessor() throws IOException, iNodeIndexOutOfBoundsException {
 		
 		currentState = new IntStack(); 
 		currentState.push(GENERALSTATE); 
@@ -65,10 +68,10 @@ public class SystemCommandsProcessor extends CommandProcessor {
 		return resultsList; 
 	}
 	
-	// Classes for each command:
+	// CLASSES FOR EACH COMMAND ARE BELOW:
 	
 	/**
-	 * 
+	 * Shuts down the programm.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -84,7 +87,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 	
 	/**
-	 * 
+	 * Creates a disk with specific blocks, block size and name.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -118,7 +121,11 @@ public class SystemCommandsProcessor extends CommandProcessor {
 					e.printStackTrace();
 				    } catch (NonExistingDiskException e) {
 					e.printStackTrace();
-				      }
+				      } catch (IOException e) {
+						e.printStackTrace();
+					} catch (iNodeIndexOutOfBoundsException e) {
+						e.printStackTrace();
+					}
 			}
 			
 			return resultsList; 
@@ -126,7 +133,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 
 	/**
-	 * 
+	 * Stops the execution of commands.
 	 * @return
 	 */
 	
@@ -135,7 +142,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 	
 	/**
-	 * 
+	 * Shows all the existant disks.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -159,9 +166,8 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 	
 	/**
-	 * 
+	 * Deletes and specific disk. 
 	 * @author rex.reyes
-	 *
 	 */
 	
 	private class DeleteDiskProcessor implements CommandActionHandler { 
@@ -190,7 +196,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 	
 	/**
-	 * Mounts the disk.
+	 * Mounts an specific disk.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -226,7 +232,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	}
 	
 	/**
-	 * Unmounts the disk.
+	 * Unmounts the current disk.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -286,6 +292,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	 * It works similar to the command loadfile, but this time 
 	 * the input file (name given first) is also an internal file that 
 	 * must be a data file in the current directory. You should figure out the rest.
+	 * CURRENTLY NOT WORKING.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -311,6 +318,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	/**
 	 * List the names and sizes of all the files and 
 	 * directories that are part of the current directory.
+	 * CURRENTLY NOT WORKING.
 	 * @author Rex J. Reyes
 	 */
 	
@@ -329,6 +337,7 @@ public class SystemCommandsProcessor extends CommandProcessor {
 	
 	/**
 	 * Displays the content of the given internal file.
+	 * CURRENTLY NOT WORKING.
 	 * @author Rex J. Reyes
 	 */
 	

@@ -36,7 +36,6 @@ public class iNodeManager {
 		try {
 			disk.read(0, block0);
 		} catch (InvalidBlockNumberException | InvalidBlockException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -47,6 +46,7 @@ public class iNodeManager {
 	 * Adds an INode to this manager.
 	 * @param e the INode to add
 	 */
+	
 	public void addiNode(iNode e){
 		iNodes.add(e);
 	}
@@ -56,6 +56,7 @@ public class iNodeManager {
 	 * @param index the index of the INode
 	 * @return
 	 */
+	
 	public iNode getINode(int index) throws iNodeIndexOutOfBoundsException{
 		if(index < 0 || index >= iNodes.size())
 			throw new iNodeIndexOutOfBoundsException("INode with index " + index + " does not exist!");
@@ -66,6 +67,7 @@ public class iNodeManager {
 	 * Deletes an INode from this manager.
 	 * @param e the INode to delete
 	 */
+	
 	public void deleteINode(iNode e){
 		for(int i = 0 ; i < iNodes.size() ; i ++)
 			if(e.equals(iNodes.get(i)))
@@ -77,6 +79,7 @@ public class iNodeManager {
 	 * @param e the INode to search for
 	 * @return the index of the give INode
 	 */
+	
 	public int getINodeIndex(iNode e){
 		for(int i = 0 ; i < iNodes.size() ; i ++)
 			if(e.equals(iNodes.get(i)))
@@ -88,6 +91,7 @@ public class iNodeManager {
 	/**
 	 * Clears all the INodes from this manager.
 	 */
+	
 	public void clearINodes(){
 		iNodes.clear();
 	}
@@ -97,6 +101,7 @@ public class iNodeManager {
 	 * @throws InvalidBlockException 
 	 * @throws InvalidBlockNumberException 
 	 */
+	
 	public void loadFreeINodes() throws InvalidBlockNumberException, InvalidBlockException{
 		freeINodes = new Stack<>();
 		int ffINode = 0 ;
@@ -111,13 +116,14 @@ public class iNodeManager {
 		ffINodeIndex = ffINode;
 
 		//Writes FirstFreeINodeIndex and NumberOfINodes to block 0
-		disk.write(0, block0);
+		//disk.write(0, block0);
 	}
 
 	/**
 	 * Marks an INode as a free INode.
 	 * @param index the index of the INode to mark as free
 	 */
+	
 	public void setFreeINode(int index) throws iNodeIndexOutOfBoundsException{
 		if(index < 0 || index >= iNodes.size())
 			throw new iNodeIndexOutOfBoundsException("INode with index " + index + " does not exist!");
@@ -138,6 +144,7 @@ public class iNodeManager {
 	 * @return a free INode
 	 * @throws FullDiskException if the DiskUnit does not have a free INode
 	 */
+	
 	public iNode getFreeINode() throws FullDiskException{
 		if(freeINodes.isEmpty())
 			throw new FullDiskException("The disk is full!");
@@ -152,6 +159,7 @@ public class iNodeManager {
 	 * @throws InvalidBlockException 
 	 * @throws InvalidBlockNumberException 
 	 */
+	
 	public void saveINodesToDisk() throws InvalidBlockNumberException, InvalidBlockException{
 		int[] iNodeInfo = new int[iNodes.size() * 2];
 		byte[] iNodeType = new byte[iNodes.size()];

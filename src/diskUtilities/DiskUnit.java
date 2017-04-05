@@ -8,6 +8,7 @@ import exceptions.InvalidBlockException;
 import exceptions.InvalidBlockNumberException;
 import exceptions.InvalidParameterException;
 import exceptions.NonExistingDiskException;
+import exceptions.iNodeIndexOutOfBoundsException;
 
 /**
  * 
@@ -39,18 +40,13 @@ public class DiskUnit {
 	 */
 	
 	public DiskUnit(String name) {
-		
-		if (!f.exists()){
-			f.mkdirs();
-		}
-		
-	    try {
-	    	File file = new File(f,name);
-	        disk = new RandomAccessFile(file, "rw");
-	    } catch (IOException e) {
-	        System.err.println ("Unable to start the disk");
-	        System.exit(1);
-	      }
+		try{
+			File raf = new File(f, name);
+			disk = new RandomAccessFile(raf, "rw");
+		} catch (IOException e){
+			System.err.println("Unable to start the disk.");
+			System.exit(1);
+		  }
 	}
 	
 	/**
@@ -60,9 +56,11 @@ public class DiskUnit {
 	 * @return the corresponding DiskUnit object.
 	 * @throws NonExistingDiskException whenever no
 	 *    ¨disk¨ with the specified name is found.
+	 * @throws IOException 
+	 * @throws iNodeIndexOutOfBoundsException 
 	 */
 	
-	public static DiskUnit mount(String name) throws NonExistingDiskException {
+	public static DiskUnit mount(String name) throws NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException {
 		File file = new File(f, name);
 		
 		if (!file.exists())
@@ -77,9 +75,36 @@ public class DiskUnit {
 	       dUnit.disk.seek(0);
 	       dUnit.capacity = dUnit.disk.readInt();
 	       dUnit.blockSize = dUnit.disk.readInt();
+		   dUnit.iNodeManager = new iNodeManager(dUnit);
+		   dUnit.fbManager = new freeBlocksManager(dUnit);
 	   } catch (IOException e) {
 	       e.printStackTrace();
 	     }
+	   
+	   boolean isNewDisk = false;
+	   
+		// iNodes
+	   
+		int numberOfINodes = Utils.getNumberOfINodes(dUnit);
+		dUnit.disk.seek(dUnit.blockSize);
+
+		for(int i = 0; i < numberOfINodes && !isNewDisk ; i++){
+			dUnit.iNodeManager.addiNode(new iNode(dUnit.disk.readByte(), dUnit.disk.readInt(), dUnit.disk.readInt()));
+			if(i == 0){
+				if(dUnit.iNodeManager.getINode(0).getSize() == 0){
+					dUnit.reserveINodeSpace();
+					isNewDisk = true;
+				}
+			}
+		}
+		
+		try {
+			dUnit.iNodeManager.loadFreeINodes();
+		} catch (InvalidBlockNumberException | InvalidBlockException e) {
+			e.printStackTrace();
+		}
+		
+		// Missing work with free blocks here.
 	       
 	   return dUnit;         
 	}
@@ -324,25 +349,20 @@ public class DiskUnit {
 	
 	public void delete(String name) throws NonExistingDiskException{
 		File file = new File(f, name);
-		File file2 = new File(f, name + "BlocksDamaged.txt");
-		if(file.exists()){
+	
+		if(file.exists())
 			file.delete();
-			if(file2.exists())
-				file2.delete();
-		}
-		else
-			throw new NonExistingDiskException("DiskUnit " + name + " does not exist!");
-
+		else throw new NonExistingDiskException("DiskUnit " + name + " does not exist!");
 
 	}
 
 	/**
 	 * Formats this disk with the given capacity and block size.
-	 * @param name the name of this DiskUnit
-	 * @param capacity the number of blocks
-	 * @param blockSize the size of the blocks
-	 * @throws NonExistingDiskException if the disk does not exist
-	 * @throws InvalidParameterException if capacity and/or block size are not powers of 2
+	 * @param name the name of this DiskUnit.
+	 * @param capacity the number of blocks.
+	 * @param blockSize the size of the blocks.
+	 * @throws NonExistingDiskException if the disk does not exist.
+	 * @throws InvalidParameterException if capacity and / or block size are not powers of 2.
 	 * @throws ExistingDiskException 
 	 */
 	
@@ -355,10 +375,10 @@ public class DiskUnit {
 	}
 	
 	/**
-	 * Reserves the space of the INodes and updates the INodeManager.
+	 * Reserves the space of the INodes and updates the iNodeManager.
 	 */
 	
-	private void reserveINodeSpace(){
+	private void reserveINodeSpace() {
 		iNodeManager.clearINodes();
 
 		try {
@@ -382,16 +402,10 @@ public class DiskUnit {
 	}
 	
 	/**
-	 * Returns the free block structure.
-	 */
-	//public String showFreeBlocks(){
-		//return fbManager.showFreeBlocks();
-	//}
-	
-	/**
 	 * Returns the FreeBlockManager for this DiskUnit.
 	 * @return the FreeBlockManager for this DiskUnit
 	 */
+	
 	public freeBlocksManager getFBManager(){
 		return fbManager;
 	}

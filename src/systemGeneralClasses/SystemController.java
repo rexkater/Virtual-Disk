@@ -1,7 +1,9 @@
 package systemGeneralClasses;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import exceptions.iNodeIndexOutOfBoundsException;
 import theSystem.IOCommandsProcessor;
 import theSystem.SystemCommandsProcessor;
 
@@ -21,7 +23,7 @@ public class SystemController {
 	private ArrayList<String> outputList; 
 	private int currentMode;
 	
-	public SystemController() { 
+	public SystemController() throws IOException, iNodeIndexOutOfBoundsException { 
 	     sys = new SystemCommandsProcessor(); 
 	     io = new IOCommandsProcessor(); 
 	     currentMode = PROCMODE; 

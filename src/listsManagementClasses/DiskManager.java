@@ -2,6 +2,10 @@ package listsManagementClasses;
 import exceptions.ExistingDiskException;
 import exceptions.InvalidParameterException;
 import exceptions.NonExistingDiskException;
+import exceptions.iNodeIndexOutOfBoundsException;
+
+import java.io.IOException;
+
 import diskUtilities.DiskUnit;
 
 /**
@@ -21,9 +25,11 @@ public class DiskManager {
 	 * @param name the name of the disk
 	 * @throws InvalidParameterException 
 	 * @throws NonExistingDiskException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
 	
-	public DiskManager(String name) throws InvalidParameterException, NonExistingDiskException {
+	public DiskManager(String name) throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException {
 		
 		try{
 		DiskUnit.createDiskUnit(name);
@@ -44,9 +50,11 @@ public class DiskManager {
 	 * @param capacity
 	 * @throws InvalidParameterException 
 	 * @throws NonExistingDiskException 
+	 * @throws iNodeIndexOutOfBoundsException 
+	 * @throws IOException 
 	 */
 	
-	public DiskManager(String name, int blockSize, int capacity) throws InvalidParameterException, NonExistingDiskException {
+	public DiskManager(String name, int blockSize, int capacity) throws InvalidParameterException, NonExistingDiskException, IOException, iNodeIndexOutOfBoundsException {
 		
 		try{
 		DiskUnit.createDiskUnit(name, capacity, blockSize);
@@ -75,6 +83,7 @@ public class DiskManager {
 	 * Returns if the disk is currently mounted.
 	 * @return true if the disk is mounted, false otherwise
 	 */
+	
 	public boolean isMounted(){
 		return mounted;
 	}
@@ -130,16 +139,5 @@ public class DiskManager {
 	public void delete() throws NonExistingDiskException{
 		disk.delete(name);
 	}
-	
-//	/**
-//	 * Loads a file to the disk.
-//	 * @param name the name of the file
-//	 * @param size the size of the file
-//	 * @param f the file to load
-//	 */
-//	public void loadFile(String name, int size, File f){
-//		disk.createNewFile(this.name, name, size, f);
-//	}
-//	
 	
 }
